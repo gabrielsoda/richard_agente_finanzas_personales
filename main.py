@@ -42,7 +42,23 @@ def agregar_gasto(fecha: str, categoria: str, descripcion: str, monto: float) ->
     Returns:
         Mensaje de confirmacion con los datos registrados.
     """
-    pass
+    df = pd.read_csv(CSV_PATH)
+    df = pd.DataFrame(columns=CSV_COLUMNS)
+    nuevo_gasto = pd.DataFrame([{
+        "fecha": fecha,
+        "categoria": categoria.lower().strip(),
+        "descripcion": descripcion.strip(),
+        "monto": float(monto),
+    }])
+    df = pd.concat([df, nuevo_gasto], ignore_index=True)
+    df.to_csv(CSV_PATH, index=False)
+    return (
+        f"Gasto registrado correctamente:\n"
+        f"      Fecha:       {fecha}\n"
+        f"      Categoría:   {categoria}\n"
+        f"      Descripción: {descripcion}\n"
+        f"      Monto:       ${monto:.2f}"
+    )
 
 
 def consultar_gastos(categoria: str = "", fecha_inicio: str = "", fecha_fin: str = "") -> str:
