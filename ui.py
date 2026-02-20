@@ -34,7 +34,7 @@ def print_response(text: str):
         console.print(
             Panel(
                 md,
-                title="[bold green]Bot[/bold green]",
+                title="[bold green]Agente[/bold green]",
                 border_style="green",
                 padding=(0, 1),
             )
@@ -43,7 +43,7 @@ def print_response(text: str):
         console.print(
             Panel(
                 text,
-                title="[bold green]Bot[/bold green]",
+                title="[bold green]Agente[/bold green]",
                 border_style="green",
                 padding=(0, 1),
             )
@@ -102,7 +102,7 @@ def main():
 
     while True:
         try:
-            user_input = Prompt.ask("[bold cyan]Tú[/bold cyan]").strip()
+            user_input = Prompt.ask("[bold cyan]Vos[/bold cyan]").strip()
         except (EOFError, KeyboardInterrupt):
             console.print("\n[bold red]Hasta luego![/bold red]")
             break
