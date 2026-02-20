@@ -1,6 +1,9 @@
-langgraph
-langchain
-langfuse
 pandas
 matplotlib
 seaborn
+langgraph
+langchain
+langchain-google-genai
+langchain-core
+python-dotenv
+langfuse
