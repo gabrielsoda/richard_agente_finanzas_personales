@@ -61,19 +61,35 @@ def agregar_gasto(fecha: str, categoria: str, descripcion: str, monto: float) ->
     )
 
 
-def consultar_gastos(categoria: str = "", fecha_inicio: str = "", fecha_fin: str = "") -> str:
+def consultar_con_codigo(codigo_python: str) -> str:
     """
-    Consulta los gastos registrados con filtros opcionales.
-
+    Consulta y analiza los gastos ejecutando codigo Python escrito por el LLM.
     Args:
-        categoria: Filtrar por categoria (opcional, dejar vacio para todas). Ejemplo: comida, transporte.
-        fecha_inicio: Fecha de inicio del rango en formato YYYY-MM-DD (opcional). Ejemplo: 2026-02-01.
-        fecha_fin: Fecha de fin del rango en formato YYYY-MM-DD (opcional). Ejemplo: 2026-02-28.
-
+        codigo_python: Codigo Python que analiza el DataFrame y setea la variable 'resultado'
+            con un string descriptivo de la respuesta.
+            Variables disponibles: df, pd, datetime, date.
+            El codigo SIEMPRE debe terminar seteando: resultado = "...texto con la respuesta..."
     Returns:
-        Resumen textual de los gastos encontrados con totales y desglose.
+        El valor de la variable 'resultado' seteada por el codigo, o el error si fallo.
     """
-    pass
+    try:
+        df = pd.read_csv(CSV_PATH, parse_dates=["fecha"])
+    except (FileNotFoundError, pd.errors.EmptyDataError):
+        return "No hay gastos registrados todavia."
+    if df.empty:
+        return "No hay gastos registrados todavia."
+    contexto = {
+        "df": df,
+        "pd": pd,
+        "datetime": datetime,
+        "date": date,
+        "resultado": "",
+    }
+    try:
+        exec(codigo_python, contexto)
+        return str(contexto.get("resultado", "El codigo no seteó la variable 'resultado'."))
+    except Exception as e:
+        return f"Error ejecutando el codigo: {e}"
 
 
 def generar_grafico_con_codigo():
@@ -95,7 +111,7 @@ class State(TypedDict):
     ultima_imagen: str | None
 
 # herramientas
-tools = [agregar_gasto, consultar_gastos, generar_grafico_con_codigo]
+tools = [agregar_gasto, consultar_con_codigo, generar_grafico_con_codigo]
 
 
 # llm

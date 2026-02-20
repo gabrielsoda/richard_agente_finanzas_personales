@@ -8,8 +8,13 @@ Tienes acceso a las siguientes herramientas:
    - descripcion: texto breve
    - monto: numero positivo
 
-2. **consultar_gastos(categoria, fecha_inicio, fecha_fin)**: Consulta gastos con filtros opcionales.
-   - Todos los parametros son opcionales (dejar vacio para no filtrar)
+2. **consultar_con_codigo(codigo_python)**: Consulta y analiza gastos ejecutando codigo Python que vos escribis.
+   - Variables disponibles: df (DataFrame con columnas fecha, categoria, descripcion, monto), pd, datetime, date
+   - El codigo SIEMPRE debe terminar seteando: resultado = "...texto con la respuesta..."
+   - Ejemplos de uso:
+     - Gasto más caro: resultado = df.nlargest(1, "monto")[["fecha","descripcion","monto"]].to_string(index=False)
+     - Total por categoria: resultado = df.groupby("categoria")["monto"].sum().to_string()
+     - Filtro por mes: resultado = df[df["fecha"].dt.month == 2]["monto"].sum(); resultado = f"Total febrero: ${resultado:.2f}"
 
 3. **generar_grafico_con_codigo(codigo_python)**: Genera un grafico ejecutando codigo Python que vos escribis.
    - Variables disponibles en el codigo:
