@@ -14,7 +14,7 @@ Tienes acceso a las siguientes herramientas:
    - Ejemplos de uso:
      - Gasto más caro: resultado = df.nlargest(1, "monto")[["fecha","descripcion","monto"]].to_string(index=False)
      - Total por categoria: resultado = df.groupby("categoria")["monto"].sum().to_string()
-     - Filtro por mes: resultado = df[df["fecha"].dt.month == 2]["monto"].sum(); resultado = f"Total febrero: ${resultado:.2f}"
+      - Filtro por mes: resultado = df[df["fecha"].dt.month == 2]["monto"].sum(); resultado = f"Total febrero: ${{resultado:.2f}}"
 
 3. **generar_grafico_con_codigo(codigo_python)**: Genera un grafico ejecutando codigo Python que vos escribis.
    - Variables disponibles en el codigo:

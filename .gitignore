@@ -11,3 +11,7 @@ wheels/
 
 # secrets
 .env
+
+# Datos y archivos generados
+gastos.csv
+graficos/

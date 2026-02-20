@@ -90,7 +90,7 @@ def consultar_con_codigo(codigo_python: str) -> str:
         "resultado": "",
     }
     try:
-        exec(codigo_python, contexto)
+        exec(codigo_python, contexto, contexto)
         return str(contexto.get("resultado", "El codigo no seteó la variable 'resultado'."))
     except Exception as e:
         return f"Error ejecutando el codigo: {e}"
@@ -124,7 +124,7 @@ def generar_grafico_con_codigo(codigo_python: str) -> str:
         "RUTA_SALIDA": str(ruta_salida),
     }
     try:
-        exec(codigo_python, contexto)
+        exec(codigo_python, contexto, contexto)
         plt.close("all")
         return f"Grafico generado correctamente: {ruta_salida}"
     except Exception as e:
@@ -197,6 +197,21 @@ def build_graph():
     builder.add_edge("parser", "assistant")
 
     return builder.compile()
+
+
+def get_langfuse_handler():
+    """Retorna un CallbackHandler de Langfuse si las keys estan configuradas, sino None."""
+    from config import LANGFUSE_PUBLIC_KEY, LANGFUSE_SECRET_KEY
+    if not LANGFUSE_PUBLIC_KEY or not LANGFUSE_SECRET_KEY:
+        return None
+    try:
+        from langfuse.callback import CallbackHandler
+        return CallbackHandler(
+            public_key=LANGFUSE_PUBLIC_KEY,
+            secret_key=LANGFUSE_SECRET_KEY,
+        )
+    except ImportError:
+        return None
 
 def main():
     print("Hello from taligent-agente-hf!")
