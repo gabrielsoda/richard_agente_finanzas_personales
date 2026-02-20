@@ -1,12 +1,19 @@
 [project]
 name = "taligent-agente-hf"
 version = "0.1.0"
-description = "Add your description here"
+description = "Agente de finanzas personales con LangGraph + Gemini"
 readme = "README.md"
 requires-python = ">=3.12"
 dependencies = [
     "langchain-google-genai>=4.2.1",
+    "langchain-core>=0.3",
+    "langgraph>=0.3",
     "matplotlib>=3.10.8",
     "pandas>=3.0.1",
+    "python-dotenv>=1.0",
+    "rich>=14.3.3",
+    "ruff>=0.15.2",
     "seaborn>=0.13.2",
+    "term-image>=0.7.2",
+    "langfuse>=2.0",
 ]
