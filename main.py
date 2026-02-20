@@ -1,16 +1,33 @@
+"""
+Agente de Gastos Financieros con LangGraph + Gemini
+Arquitectura ReAct
+
+Tools:
+1. agregar_gasto              
+    - Registra un gasto en la base de datos CSV
+2. consultar_gastos           
+    - Consulta y filtra gastos registrados
+3. generar_grafico_con_codigo 
+    - El LLM genera codigo Python (pandas/matplotlib/seaborn)
+"""
 import pandas as pd
 import matplotlib.pyplot as plt
 import seaborn as sns
 
-
+from typing import Annotated
 from typing_extensions import TypedDict
 from datetime import datetime, date
 from langchain_google_genai import ChatGoogleGenerativeAI
 from langchain_core.messages import AnyMessage, SystemMessage, HumanMessage, ToolMessage
 from langgraph.graph import StateGraph, START
+from langgraph.graph.message import add_messages
 from langgraph.prebuilt import ToolNode, tools_condition
 
+from config import CSV_PATH, CSV_COLUMNS, GRAFICOS_DIR
 from prompts import SYSTEM_PROMPT
+
+
+
 
 def agregar_gasto(fecha: str, categoria: str, descripcion: str, monto: float) -> str:
     """
@@ -43,7 +60,7 @@ def consultar_gastos(categoria: str = "", fecha_inicio: str = "", fecha_fin: str
     pass
 
 
-def generar_grafico():
+def generar_grafico_con_codigo():
         """
     Genera un grafico ejecutando codigo Python.
 
@@ -55,18 +72,17 @@ def generar_grafico():
         Mensaje con la ruta del archivo PNG generado, o el error si fallo la ejecucion.
     """
 
-
 # state del agente
 
 class State(TypedDict):
-    graph_state: str
+    messages: Annotated[list, add_messages]
+    ultima_imagen: str | None
 
 # herramientas
-tools = [agregar_gasto, consultar_gastos, generar_grafico]
+tools = [agregar_gasto, consultar_gastos, generar_grafico_con_codigo]
 
 
 # llm
-
 llm = ChatGoogleGenerativeAI(
     model="gemini-2.5-flash",
     temperature=1.0,
@@ -83,27 +99,27 @@ def assistant(state: State):
     """Nodo principal del agente: razona y decide que herramienta usar."""
     today = date.today().isoformat()
     sys_msg = SystemMessage(content=SYSTEM_PROMPT.format(today=today))
-    llm_with_tools = llm_with_tools()
     response = llm_with_tools.invoke([sys_msg] + state["messages"])
     return {"messages": [response]}
 
 
 # grafo ReAct
-builder = StateGraph(State)
+def build_graph():
+    "construye y compila grafo ReAct."
+    builder = StateGraph(State)
 
-# nodos
-builder.add_node("assistant", assistant)
-builder.add_node("tools", ToolNode(tools))
 
-# edges
-builder.add_edge(START, "assistant")
-builder.add_conditional_edges(
-    "assistant",
-    tools_condition,
-)
-builder.add_edge("tools", "assistant")
+    builder.add_node("assistant", assistant)
+    builder.add_node("tools", ToolNode(tools))
 
-react_graph = builder.compile()
+    builder.add_edge(START, "assistant")
+    builder.add_conditional_edges(
+        "assistant",
+        tools_condition,
+    )
+    builder.add_edge("tools", "assistant")
+
+    return builder.compile()
 
 def main():
     print("Hello from taligent-agente-hf!")
