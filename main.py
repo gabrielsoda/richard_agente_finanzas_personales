@@ -201,15 +201,18 @@ def build_graph():
 
 def get_langfuse_handler():
     """Retorna un CallbackHandler de Langfuse si las keys estan configuradas, sino None."""
-    from config import LANGFUSE_PUBLIC_KEY, LANGFUSE_SECRET_KEY
+    from config import LANGFUSE_PUBLIC_KEY, LANGFUSE_SECRET_KEY, LANGFUSE_HOST
     if not LANGFUSE_PUBLIC_KEY or not LANGFUSE_SECRET_KEY:
         return None
     try:
-        from langfuse.callback import CallbackHandler
-        return CallbackHandler(
+        from langfuse import Langfuse
+        from langfuse.langchain import CallbackHandler
+        Langfuse(
             public_key=LANGFUSE_PUBLIC_KEY,
             secret_key=LANGFUSE_SECRET_KEY,
+            host=LANGFUSE_HOST,
         )
+        return CallbackHandler()
     except ImportError:
         return None
 

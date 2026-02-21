@@ -16,4 +16,5 @@ dependencies = [
     "seaborn>=0.13.2",
     "term-image>=0.7.2",
     "langfuse>=2.0",
+    "langchain>=1.2.10",
 ]
