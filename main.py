@@ -3,13 +3,14 @@ Agente de Gastos Financieros con LangGraph + Gemini
 Arquitectura ReAct
 
 Tools:
-1. agregar_gasto              
+1. agregar_gasto
     - Registra un gasto en la base de datos CSV
-2. consultar_gastos           
+2. consultar_gastos
     - Consulta y filtra gastos registrados
-3. generar_grafico_con_codigo 
+3. generar_grafico_con_codigo
     - El LLM genera codigo Python (pandas/matplotlib/seaborn)
 """
+
 import pandas as pd
 import matplotlib.pyplot as plt
 import seaborn as sns
@@ -37,8 +38,11 @@ def _load_gastos(parse_dates: bool = True) -> pd.DataFrame | None:
         return df
     except (FileNotFoundError, pd.errors.EmptyDataError):
         return None
-    
-def _execute_llm_code(code: str, df: pd.DataFrame, extra_context: dict | None = None) -> dict:
+
+
+def _execute_llm_code(
+    code: str, df: pd.DataFrame, extra_context: dict | None = None
+) -> dict:
     """Ejecuta código Python generado por el LLM en un contexto controlado.
     Returns:
         dict con claves:
@@ -75,7 +79,7 @@ def agregar_gasto(fecha: str, categoria: str, descripcion: str, monto: float) ->
     Returns:
         Mensaje de confirmación con los datos registrados.
     """
-    #validar fecha
+    # validar fecha
     try:
         datetime.strptime(fecha, "%Y-%m-%d")
     except ValueError:
@@ -87,22 +91,25 @@ def agregar_gasto(fecha: str, categoria: str, descripcion: str, monto: float) ->
             f"Error: La categoría '{categoria}' no es válida. "
             f"Opciones: {', '.join(CATEGORIAS_VALIDAS)}"
         )
-    #validar monto
+    # validar monto
     if monto <= 0:
         return f"Error: El monto debe ser positivo, se recibió {monto}."
-    
-    
+
     # Cargar o crear DataFrame
     df = _load_gastos(parse_dates=False)
     if df is None:
         df = pd.DataFrame(columns=CSV_COLUMNS)
-    
-    nuevo_gasto = pd.DataFrame([{
-        "fecha": fecha,
-        "categoria": categoria.lower().strip(),
-        "descripcion": descripcion.strip(),
-        "monto": float(monto),
-    }])
+
+    nuevo_gasto = pd.DataFrame(
+        [
+            {
+                "fecha": fecha,
+                "categoria": categoria.lower().strip(),
+                "descripcion": descripcion.strip(),
+                "monto": float(monto),
+            }
+        ]
+    )
     df = pd.concat([df, nuevo_gasto], ignore_index=True)
     df.to_csv(CSV_PATH, index=False)
     return (
@@ -128,11 +135,15 @@ def consultar_con_codigo(codigo_python: str) -> str:
     df = _load_gastos()
     if df is None:
         return "No hay gastos registrados todavía."
-    
+
     result = _execute_llm_code(codigo_python, df, extra_context={"resultado": ""})
     if not result["ok"]:
         return f"Error ejecutando el codigo: {result['error']}"
-    return str(result["context"].get("resultado", "El código no seteó la variable 'resultado'."))
+    return str(
+        result["context"].get(
+            "resultado", "El código no seteó la variable 'resultado'."
+        )
+    )
 
 
 def generar_grafico_con_codigo(codigo_python: str) -> str:
@@ -148,13 +159,15 @@ def generar_grafico_con_codigo(codigo_python: str) -> str:
     df = _load_gastos()
     if df is None:
         return "No hay gastos registrados todavía."
-    
+
     timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
     ruta_salida = GRAFICOS_DIR / f"grafico_{timestamp}.png"
 
-    result = _execute_llm_code(codigo_python, df, extra_context={"plt": plt, 
-                                                                 "sns": sns, 
-                                                                 "RUTA_SALIDA": str(ruta_salida)})
+    result = _execute_llm_code(
+        codigo_python,
+        df,
+        extra_context={"plt": plt, "sns": sns, "RUTA_SALIDA": str(ruta_salida)},
+    )
     plt.close("all")
     if not result["ok"]:
         return f"Error ejecutando el codigo: {result['error']}"
@@ -166,12 +179,13 @@ def generar_grafico_con_codigo(codigo_python: str) -> str:
     )
 
 
-
 # state del agente
+
 
 class State(TypedDict):
     messages: Annotated[list, add_messages]
     ultima_imagen: str | None
+
 
 # herramientas
 tools = [agregar_gasto, consultar_con_codigo, generar_grafico_con_codigo]
@@ -187,8 +201,8 @@ llm = ChatGoogleGenerativeAI(
 llm_with_tools = llm.bind_tools(tools)
 
 
-
 # NODOS:
+
 
 def assistant(state: State):
     """Nodo principal del agente: razona y decide que herramienta usar."""
@@ -199,14 +213,14 @@ def assistant(state: State):
 
 
 def parser(state: State):
-    """Revisa si el último ToolMessage viene de generar_grafico_con_codigo, 
+    """Revisa si el último ToolMessage viene de generar_grafico_con_codigo,
     guarda la ruta en ultima_imagen
     """
     for msg in reversed(state["messages"]):
         if isinstance(msg, ToolMessage) and msg.name == "generar_grafico_con_codigo":
-            # El mensaje tiene formato: "Grafico generado correctamente: /ruta/al/archivo.png"
-            if "Grafico generado correctamente:" in msg.content:
-                ruta = msg.content.split("Grafico generado correctamente:")[-1].strip()
+            # El mensaje tiene formato: "Gráfico generado correctamente: /ruta/al/archivo.png"
+            if "Gráfico generado correctamente:" in msg.content:
+                ruta = msg.content.split("Gráfico generado correctamente:")[-1].strip()
                 return {"ultima_imagen": ruta}
             break
     return {"ultima_imagen": None}
@@ -216,7 +230,6 @@ def parser(state: State):
 def build_graph():
     "construye y compila grafo ReAct."
     builder = StateGraph(State)
-
 
     builder.add_node("assistant", assistant)
     builder.add_node("tools", ToolNode(tools))
@@ -236,11 +249,13 @@ def build_graph():
 def get_langfuse_handler():
     """Retorna un CallbackHandler de Langfuse si las keys estan configuradas, sino None."""
     from config import LANGFUSE_PUBLIC_KEY, LANGFUSE_SECRET_KEY, LANGFUSE_HOST
+
     if not LANGFUSE_PUBLIC_KEY or not LANGFUSE_SECRET_KEY:
         return None
     try:
         from langfuse import Langfuse
         from langfuse.langchain import CallbackHandler
+
         Langfuse(
             public_key=LANGFUSE_PUBLIC_KEY,
             secret_key=LANGFUSE_SECRET_KEY,
@@ -250,10 +265,12 @@ def get_langfuse_handler():
     except ImportError:
         return None
 
+
 def main():
     print("Hello from taligent-agente-hf!")
 
 
 if __name__ == "__main__":
     from ui import main as ui_main
+
     ui_main()

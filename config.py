@@ -6,6 +6,7 @@ from dotenv import load_dotenv
 load_dotenv()  # Se ejecuta aquí, una sola vez
 
 import logging
+
 logging.getLogger("opentelemetry").setLevel(logging.CRITICAL)
 
 # Rutas
@@ -16,8 +17,16 @@ GRAFICOS_DIR.mkdir(exist_ok=True)
 
 # Columnas del CSV
 CSV_COLUMNS = ["fecha", "categoria", "descripcion", "monto"]
-CATEGORIAS_VALIDAS = ["comida", "transporte", "servicios", "entretenimiento", 
-                      "salud", "educación", "deporte", "otros"]
+CATEGORIAS_VALIDAS = [
+    "comida",
+    "transporte",
+    "servicios",
+    "entretenimiento",
+    "salud",
+    "educacion",
+    "deporte",
+    "otros",
+]
 
 # API Keys
 GOOGLE_API_KEY = os.getenv("GOOGLE_API_KEY")

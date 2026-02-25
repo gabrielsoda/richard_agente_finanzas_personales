@@ -4,7 +4,7 @@ Tienes acceso a las siguientes herramientas:
 
 1. **agregar_gasto(fecha, categoria, descripcion, monto)**: Registra un nuevo gasto.
    - fecha: formato YYYY-MM-DD
-   - categoria: comida, transporte, servicios, entretenimiento, salud, educacion, otros
+   - categoria: comida, transporte, servicios, entretenimiento, salud, educacion, deporte, otros
    - descripcion: texto breve
    - monto: numero positivo
 
