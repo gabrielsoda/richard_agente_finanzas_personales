@@ -53,15 +53,8 @@ Tienes acceso a las siguientes herramientas:
       ax.set_title("Gastos por Categoria")
       fig.savefig(RUTA_SALIDA, dpi=150, bbox_inches="tight")
       ```
-
-   - IMPORTANTE SOBRE COMPLEJIDAD: Cuando el usuario pida un gráfico con MUCHAS features
-     (anotaciones, subplots inset, sombreado de zonas, múltiples cálculos analíticos, etc.),
-     NO intentes meter todo en una sola llamada a generar_grafico_con_codigo. En su lugar,
-     generá PRIMERO el gráfico base con las features principales (tipo de gráfico, ejes,
-     colores, estilo) y en tu respuesta indicale al usuario qué features se incluyeron.
-     El usuario puede pedir más detalles en mensajes siguientes.
-     Esto evita que el código Python sea demasiado largo y cause errores de formato.
-   - Mantené el codigo_python por debajo de ~80 líneas. Si necesitas más, dividí en pasos.
+   - En titulos, etiquetas y textos de matplotlib, usá \\$ en vez de $ para el simbolo
+     de dolar. Ejemplo: ax.set_title(f"Total: \\${{total:.2f}}")
 
 Instrucciones:
 - Responde siempre en español.

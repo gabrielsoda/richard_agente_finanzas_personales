@@ -166,13 +166,23 @@ def generar_grafico_con_codigo(codigo_python: str) -> str:
     result = _execute_llm_code(
         codigo_python,
         df,
-        extra_context={"plt": plt, "sns": sns, "RUTA_SALIDA": str(ruta_salida)},
+        extra_context={"plt": plt, 
+                       "sns": sns, 
+                       "RUTA_SALIDA": str(ruta_salida),
+                       "resultado": "",
+                       },
     )
     plt.close("all")
     if not result["ok"]:
         return f"Error ejecutando el codigo: {result['error']}"
     if ruta_salida.exists():
-        return f"Gráfico generado correctamente: {ruta_salida}"
+        msg = f"Gráfico generado correctamente: {ruta_salida}"
+        # si el llm seteó resultado con datos extra se incluyen en la respuesta para 
+        # que los use en la respuesta y no invente valores
+        resultado_extra = result["context"].get("resultado", "")
+        if resultado_extra:
+            msg += f"\n\nDatos calculados:\n{resultado_extra}"
+        return msg
     return (
         "El codigo se ejecuto sin errores pero no se genero el archivo PNG. "
         "Asegurate de usar fig.savefig(RUTA_SALIDA, dpi=150, bbox_inches='tight')"
