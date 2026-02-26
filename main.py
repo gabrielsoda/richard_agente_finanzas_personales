@@ -217,6 +217,8 @@ def parser(state: State):
     guarda la ruta en ultima_imagen
     """
     for msg in reversed(state["messages"]):
+        if isinstance(msg, HumanMessage):
+            break
         if isinstance(msg, ToolMessage) and msg.name == "generar_grafico_con_codigo":
             # El mensaje tiene formato: "Gráfico generado correctamente: /ruta/al/archivo.png"
             if "Gráfico generado correctamente:" in msg.content:
@@ -264,10 +266,6 @@ def get_langfuse_handler():
         return CallbackHandler()
     except ImportError:
         return None
-
-
-def main():
-    print("Hello from taligent-agente-hf!")
 
 
 if __name__ == "__main__":
