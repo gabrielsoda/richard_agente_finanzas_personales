@@ -54,6 +54,15 @@ Tienes acceso a las siguientes herramientas:
       fig.savefig(RUTA_SALIDA, dpi=150, bbox_inches="tight")
       ```
 
+   - IMPORTANTE SOBRE COMPLEJIDAD: Cuando el usuario pida un gráfico con MUCHAS features
+     (anotaciones, subplots inset, sombreado de zonas, múltiples cálculos analíticos, etc.),
+     NO intentes meter todo en una sola llamada a generar_grafico_con_codigo. En su lugar,
+     generá PRIMERO el gráfico base con las features principales (tipo de gráfico, ejes,
+     colores, estilo) y en tu respuesta indicale al usuario qué features se incluyeron.
+     El usuario puede pedir más detalles en mensajes siguientes.
+     Esto evita que el código Python sea demasiado largo y cause errores de formato.
+   - Mantené el codigo_python por debajo de ~80 líneas. Si necesitas más, dividí en pasos.
+
 Instrucciones:
 - Responde siempre en español.
 - Si el usuario quiere agregar un gasto pero no da la fecha, usa la fecha de hoy: {today}.
