@@ -52,17 +52,27 @@ def print_response(text: str):
 
 
 def mostrar_imagen(ruta: str):
-    """Muestra la imagen en la terminal si el protocolo es soportado, sino imprime la ruta."""
-    try:
-        from term_image.image import AutoImage
+    """Muestra la imagen en la terminal usando chafa (sixel), sino imprime la ruta."""
+    import subprocess
+    import shutil
+    import os
+    if shutil.which("chafa"):
+        try:
+            cols = os.get_terminal_size().columns
+            ancho = int(cols*2)
+            console.print()
+            subprocess.run(["chafa", "-f", "sixel", f"--size={ancho}x", ruta], check=True)
+            console.print()
+            console.print(
+                f"[dim]Gráfico guardado en:[/dim] [bold cyan]{ruta}[/bold cyan]\n"
+                )
+            return
+        except (subprocess.CalledProcessError, OSError):
+            pass
 
-        console.print()
-        AutoImage(ruta).draw()
-        console.print()
-    except Exception:
-        console.print(
-            f"[dim]Gráfico guardado en:[/dim] [bold cyan]{ruta}[/bold cyan]\n"
-        )
+    console.print(
+        f"[dim]Gráfico guardado en:[/dim] [bold cyan]{ruta}[/bold cyan]\n"
+    )
 
 
 def extract_response_text(last_message) -> str:
