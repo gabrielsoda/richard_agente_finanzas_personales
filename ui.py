@@ -59,7 +59,7 @@ def mostrar_imagen(ruta: str):
     if shutil.which("chafa"):
         try:
             cols = os.get_terminal_size().columns
-            ancho = int(cols*2)
+            ancho = int(cols*2.5)
             console.print()
             subprocess.run(["chafa", "-f", "sixel", f"--size={ancho}x", ruta], check=True)
             console.print()
