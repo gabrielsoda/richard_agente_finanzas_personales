@@ -50,6 +50,10 @@ def _execute_llm_code(
             - "context": dict con el contexto post-ejecución
             - "error": str | None
     """
+
+    code = code.replace("\\'", "'")
+    code = code.replace("\\$", "$")    
+    
     contexto = {
         "pd": pd,
         "df": df,
