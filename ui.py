@@ -131,6 +131,15 @@ def main():
                 state = result
                 last_message = result["messages"][-1]
                 response_text = extract_response_text(last_message)
+                # si la respuesta está vacia:
+                if not response_text or not response_text.strip():
+                    console.print(
+                        "\n[bold yellow][Aviso][/bold yellow] "
+                        "El agente no generó una respuesta. "
+                        "Intentá reformular tu consulta.\n"
+                    )
+                    continue    
+
             except Exception as e:
                 console.print(f"\n[bold red][Error][/bold red] {e}\n")
                 if state["messages"] and isinstance(
