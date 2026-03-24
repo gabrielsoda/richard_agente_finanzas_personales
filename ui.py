@@ -56,23 +56,24 @@ def mostrar_imagen(ruta: str):
     import subprocess
     import shutil
     import os
+
     if shutil.which("chafa"):
         try:
             cols = os.get_terminal_size().columns
-            ancho = int(cols*2.5)
+            ancho = int(cols * 2.5)
             console.print()
-            subprocess.run(["chafa", "-f", "sixel", f"--size={ancho}x", ruta], check=True)
+            subprocess.run(
+                ["chafa", "-f", "sixel", f"--size={ancho}x", ruta], check=True
+            )
             console.print()
             console.print(
                 f"[dim]Gráfico guardado en:[/dim] [bold cyan]{ruta}[/bold cyan]\n"
-                )
+            )
             return
         except (subprocess.CalledProcessError, OSError):
             pass
 
-    console.print(
-        f"[dim]Gráfico guardado en:[/dim] [bold cyan]{ruta}[/bold cyan]\n"
-    )
+    console.print(f"[dim]Gráfico guardado en:[/dim] [bold cyan]{ruta}[/bold cyan]\n")
 
 
 def extract_response_text(last_message) -> str:
@@ -95,7 +96,7 @@ def extract_response_text(last_message) -> str:
 def main():
     """Loop principal del agente en terminal con rich."""
     print_welcome()
-    from main import build_graph, get_langfuse_handler
+    from richard.agent import build_graph, get_langfuse_handler
 
     graph = build_graph()
     langfuse_handler = get_langfuse_handler()
@@ -138,7 +139,7 @@ def main():
                         "El agente no generó una respuesta. "
                         "Intentá reformular tu consulta.\n"
                     )
-                    continue    
+                    continue
 
             except Exception as e:
                 console.print(f"\n[bold red][Error][/bold red] {e}\n")

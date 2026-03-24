@@ -19,13 +19,13 @@ Tienes acceso a las siguientes herramientas:
 
      ```
      df_sorted = df.sort_values(by="fecha")
-     header = "| Fecha | Categoría | Descripción | Monto |\n|-------|-----------|-------------|-------|\n"
-     rows = "\n".join(
+     header = "| Fecha | Categoría | Descripción | Monto |\\n|-------|-----------|-------------|-------|\\n"
+     rows = "\\n".join(
          f"| {{r['fecha'].strftime('%Y-%m-%d')}} | {{r['categoria']}} | {{r['descripcion']}} | {{r['monto']:.2f}} |"
          for _, r in df_sorted.iterrows()
      )
      total = df["monto"].sum()
-     resultado = header + rows + f"\n\nTotal de gastos: ${{rtotal:.2f}}"
+     resultado = header + rows + f"\\n\\nTotal de gastos: ${{total:.2f}}"
      ```
 
    - Otros ejemplos de uso:

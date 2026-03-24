@@ -1,4 +1,4 @@
-# config.py
+# richard/config.py
 import os
 from pathlib import Path
 from dotenv import load_dotenv
@@ -10,7 +10,7 @@ import logging
 logging.getLogger("opentelemetry").setLevel(logging.CRITICAL)
 
 # Rutas
-BASE_DIR = Path(__file__).resolve().parent
+BASE_DIR = Path(__file__).resolve().parent.parent  # raiz del proyecto
 CSV_PATH = BASE_DIR / "gastos.csv"
 GRAFICOS_DIR = BASE_DIR / "graficos"
 GRAFICOS_DIR.mkdir(exist_ok=True)
