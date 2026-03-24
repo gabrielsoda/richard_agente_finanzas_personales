@@ -15,3 +15,6 @@ wheels/
 # Datos y archivos generados
 gastos.csv
 graficos/
+
+# demo que prueba que todo esté conectado y funcionando correctamente
+demo_a2a_client.py
