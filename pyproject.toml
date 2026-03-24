@@ -17,4 +17,6 @@ dependencies = [
     "term-image>=0.7.2",
     "langfuse>=2.0",
     "langchain>=1.2.10",
+    "mcp[cli]>=1.26.0",
+    "a2a-sdk>=0.3.25",
 ]
